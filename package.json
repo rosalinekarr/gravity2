@@ -1,0 +1,9 @@
+{
+  "name": "gravity2",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "author": "Rosaline Karr <rose@rosalinekarr.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {}
+}
