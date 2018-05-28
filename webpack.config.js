@@ -11,7 +11,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new HTMLWebpackPlugin()
+    new HTMLWebpackPlugin({
+      title: 'Gravity 2',
+      hash: true
+    })
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']
