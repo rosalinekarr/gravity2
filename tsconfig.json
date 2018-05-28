@@ -1,0 +1,6 @@
+{
+  "include": [
+    "./src/**/*"
+  ],
+  "sourceMap": true
+}
