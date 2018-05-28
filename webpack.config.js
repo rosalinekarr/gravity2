@@ -1,4 +1,5 @@
 var HTMLWebpackPlugin = require('html-webpack-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   devServer: {
@@ -7,13 +8,17 @@ module.exports = {
   devtool: 'inline-source-map',
   module: {
     rules: [
-      { test: /\.ts?$/, loader: 'ts-loader' }
+      { test: /\.css$/, use: [ MiniCssExtractPlugin.loader, 'css-loader' ] },
+      { test: /\.ts$/, loader: 'ts-loader' }
     ]
   },
   plugins: [
     new HTMLWebpackPlugin({
       title: 'Gravity 2',
       hash: true
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name]-[hash].css'
     })
   ],
   resolve: {
