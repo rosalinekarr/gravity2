@@ -1,46 +1,56 @@
 import {Particle} from '../models';
 
-interface RenderParticleOpts {
-    scale?: number;
-    showForces?: boolean;
-    showVelocities?: boolean;
-}
-
-const DEFAULT_SCALE = 1.0;
-
-function getScale(opts: RenderParticleOpts) {
-    return opts.scale || DEFAULT_SCALE;
+export interface RenderParticleOpts {
+    forceLineColor: string;
+    forceLineScale: number;
+    forceLineWidth: number;
+    particleColor: string;
+    particleDensity: number;
+    scale: number;
+    showForces: boolean;
+    showVelocities: boolean;
+    velocityLineColor: string;
+    velocityLineScale: number;
+    velocityLineWidth: number;
 }
 
 function renderParticleBody(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-    const radius = particle.radius() / getScale(opts);
-    const scrnX = (particle.position.x / getScale(opts)) + (ctx.canvas.width/2);
-    const scrnY = (particle.position.y / getScale(opts)) + (ctx.canvas.height/2);
+    const radius = particle.radius(opts) / opts.scale;
+    const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
+    const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
 
     ctx.beginPath();
     ctx.arc(scrnX, scrnY, radius, 0, Math.PI * 2);
     ctx.fill();
 }
 
-function renderForces(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-    const scrnX = (particle.position.x / getScale(opts)) + (ctx.canvas.width/2);
-    const scrnY = (particle.position.y / getScale(opts)) + (ctx.canvas.height/2);
+function renderForce(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
+    const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
+    const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
+    const lineVector = particle.force.multiply(opts.forceLineScale).add(
+        particle.force.normalize().multiply(
+            particle.radius(opts)
+        )
+    );
 
     ctx.beginPath();
     ctx.moveTo(scrnX, scrnY);
-    ctx.lineTo(scrnX + particle.force.x * 0.00000000001 / getScale(opts), scrnY + particle.force.y * 0.00000000001 / getScale(opts));
-    ctx.closePath();
+    ctx.lineTo(scrnX + lineVector.x / opts.scale, scrnY + lineVector.y / opts.scale);
     ctx.stroke();
 }
 
-function renderVelocities(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-    const scrnX = (particle.position.x / getScale(opts)) + (ctx.canvas.width/2);
-    const scrnY = (particle.position.y / getScale(opts)) + (ctx.canvas.height/2);
+function renderVelocity(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
+    const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
+    const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
+    const lineVector = particle.velocity.multiply(opts.velocityLineScale).add(
+        particle.velocity.normalize().multiply(
+            particle.radius(opts)
+        )
+    );
 
     ctx.beginPath();
     ctx.moveTo(scrnX, scrnY);
-    ctx.lineTo(scrnX + particle.velocity.x * 10.0 / getScale(opts), scrnY + particle.velocity.y * 10.0 / getScale(opts));
-    ctx.closePath();
+    ctx.lineTo(scrnX + lineVector.x / opts.scale, scrnY + lineVector.y / opts.scale);
     ctx.stroke();
 }
 
@@ -49,15 +59,18 @@ export default function renderParticles(ctx: CanvasRenderingContext2D, particles
         showForces,
         showVelocities,
     } = opts;
+    ctx.lineCap = 'round';
 
-    ctx.strokeStyle = '#0000FF';
+    ctx.lineWidth = opts.forceLineWidth;
+    ctx.strokeStyle = opts.forceLineColor;
     if (showForces)
-        particles.forEach((p) => renderForces(ctx, p, opts));
+        particles.forEach((p) => renderForce(ctx, p, opts));
 
-    ctx.strokeStyle = '#FF0000';
+    ctx.lineWidth = opts.velocityLineWidth;
+    ctx.strokeStyle = opts.velocityLineColor;
     if (showVelocities)
-        particles.forEach((p) => renderVelocities(ctx, p, opts));
+        particles.forEach((p) => renderVelocity(ctx, p, opts));
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = opts.particleColor;
     particles.forEach((p) => renderParticleBody(ctx, p, opts));
 }

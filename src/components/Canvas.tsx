@@ -1,24 +1,25 @@
 import { useEffect, useRef } from 'react'
 import useWindowSize from '../hooks/useWindowSize';
 import Universe from '../models/universe';
+import type {RenderParticleOpts} from '../renderers/particle';
+import type {RenderScaleOpts} from '../renderers/scale';
 import {renderBackground, renderParticles, renderScale} from '../renderers';
 
+type RenderOptions = RenderParticleOpts & RenderScaleOpts;
+
 interface CanvasProps {
-    scale: number;
-    showForces: boolean;
-    showScale: boolean;
-    showVelocities: boolean;
+    renderOptions: RenderOptions;
     universe: Universe;
 }
 
-function Canvas({universe, scale, showForces, showScale, showVelocities}: CanvasProps) {
+function Canvas({universe, renderOptions}: CanvasProps) {
   const [width, height] = useWindowSize();
   const canvasRef = useRef(null);
 
-  function draw(ctx: CanvasRenderingContext2D, _: DOMHighResTimeStamp) {
+  function draw(ctx: CanvasRenderingContext2D, _timestamp: DOMHighResTimeStamp) {
     renderBackground(ctx);
-    renderParticles(ctx, universe.particles, {scale, showForces, showVelocities});
-    renderScale(ctx, {scale, showScale});
+    renderParticles(ctx, universe.particles, renderOptions);
+    renderScale(ctx, renderOptions);
   }
 
   useEffect(() => {

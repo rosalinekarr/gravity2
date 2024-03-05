@@ -50,8 +50,8 @@ export default class Particle {
         this.force = force;
     }
 
-    radius() {
-        return (10.0 ** -5.7) * Math.sqrt(this.mass);
+    radius(opts: {particleDensity: number}) {
+        return Math.abs((this.mass / opts.particleDensity) ** (1.0/3.0));
     }
 
     serialize(): ParticleSerialization {

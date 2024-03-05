@@ -1,4 +1,4 @@
-interface RenderScaleOpts {
+export interface RenderScaleOpts {
     scale?: number;
     showScale?: boolean;
 }
