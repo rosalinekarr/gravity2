@@ -1,56 +1,64 @@
-import Vector from './vector';
+import Vector, {VectorSerialization} from './vector';
 
-interface ParticleRenderOpts {
-    scale: number;
+interface ParticleConstructorArgs {
+    mass: number;
+    position: Vector;
+    velocity?: Vector;
+}
+
+export type ParticleSerialization = {
+    mass: number;
+    position: VectorSerialization;
+    velocity: VectorSerialization;
 }
 
 export default class Particle {
+    force: Vector;
+    mass: number;
     position: Vector;
     velocity: Vector;
-    mass: number;
 
-    constructor(mass: number, position: Vector, velocity: Vector) {
+    constructor({mass, position, velocity}: ParticleConstructorArgs) {
         this.mass = mass;
         this.position = position;
-        this.velocity = velocity;
+        this.velocity = velocity || new Vector(0.0, 0.0);
+        this.force = new Vector(0.0, 0.0);
     }
 
-    move(timeDelta: number) {
+    static deserialize({mass, position, velocity}: ParticleSerialization) {
+        return new Particle({
+            mass,
+            position: Vector.deserialize(position),
+            ...(velocity ? {
+                velocity: Vector.deserialize(velocity),
+            } : {}),
+        });
+    }
+
+    update(timeDelta: number) {
         this.position = new Vector(
-            this.position.x + this.velocity.x * timeDelta,
-            this.position.y + this.velocity.y * timeDelta,
+          this.position.x + this.velocity.x * timeDelta,
+          this.position.y + this.velocity.y * timeDelta,
+        );
+        this.velocity = new Vector(
+          this.velocity.x + this.force.x / this.mass,
+          this.velocity.y + this.force.y / this.mass,
         );
     }
-
-    applyForce(force: Vector, timeDelta: number) {
-        this.velocity = new Vector(
-            this.velocity.x + force.x * timeDelta / this.mass,
-            this.velocity.y + force.y * timeDelta / this.mass,
-        );
+    
+    applyForce(force: Vector) {
+        this.force = force;
     }
 
     radius() {
         return (10.0 ** -5.7) * Math.sqrt(this.mass);
     }
 
-    render(ctx: CanvasRenderingContext2D, opts: ParticleRenderOpts) {
-        const radius = this.radius() / opts.scale;
-        const scrnX = (this.position.x / opts.scale) + (ctx.canvas.width/2);
-        const scrnY = (this.position.y / opts.scale) + (ctx.canvas.height/2);
-    
-        ctx.beginPath();
-        ctx.arc(scrnX, scrnY, radius, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    renderVelocity(ctx: CanvasRenderingContext2D, opts: ParticleRenderOpts) {
-        const radius = this.radius() / opts.scale;
-        const scrnX = (this.position.x / opts.scale) + (ctx.canvas.width/2);
-        const scrnY = (this.position.y / opts.scale) + (ctx.canvas.height/2);
-
-        ctx.beginPath();
-        ctx.moveTo(scrnX, scrnY);
-        ctx.lineTo(scrnX + this.velocity.x * 10.0 / opts.scale, scrnY + this.velocity.y * 10.0 / opts.scale);
-        ctx.stroke();
+    serialize(): ParticleSerialization {
+        return {
+            position: this.position.serialize(),
+            velocity: this.velocity.serialize(),
+            mass: this.mass,
+        };
     }
 }
