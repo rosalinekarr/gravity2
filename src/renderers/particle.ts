@@ -61,6 +61,9 @@ export default function renderParticles(ctx: CanvasRenderingContext2D, particles
     } = opts;
     ctx.lineCap = 'round';
 
+    ctx.fillStyle = opts.particleColor;
+    particles.forEach((p) => renderParticleBody(ctx, p, opts));
+
     ctx.lineWidth = opts.forceLineWidth;
     ctx.strokeStyle = opts.forceLineColor;
     if (showForces)
@@ -70,7 +73,4 @@ export default function renderParticles(ctx: CanvasRenderingContext2D, particles
     ctx.strokeStyle = opts.velocityLineColor;
     if (showVelocities)
         particles.forEach((p) => renderVelocity(ctx, p, opts));
-
-    ctx.fillStyle = opts.particleColor;
-    particles.forEach((p) => renderParticleBody(ctx, p, opts));
 }

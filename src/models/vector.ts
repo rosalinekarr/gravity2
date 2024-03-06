@@ -9,12 +9,45 @@ export default class Vector {
         this.y = y;
     }
 
+    static add(a: Vector, b: Vector) {
+        return new Vector(
+            a.x + b.x,
+            a.y + b.y,
+        );
+    }
+
     static deserialize([x, y]: VectorSerialization) {
         return new Vector(x, y);
     }
 
+    static diff(a: Vector, b: Vector) {
+        return new Vector(
+            a.x - b.x,
+            a.y - b.y,
+        );
+    }
+
+    static dotProduct(a: Vector, b: Vector) {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    add(a: Vector) {
+        return Vector.add(this, a);
+    }
+
+    diff(a: Vector) {
+        return Vector.diff(this, a);
+    }
+
     magnitude() {
         return Math.sqrt(this.x ** 2 + this.y ** 2);
+    }
+
+    multiply(multiplicand: number) {
+        return new Vector(
+            this.x * multiplicand,
+            this.y * multiplicand,
+        );
     }
 
     normalize() {
@@ -22,20 +55,6 @@ export default class Vector {
         return new Vector(
             this.x / this.magnitude(),
             this.y / this.magnitude(),
-        );
-    }
-
-    add(a: Vector) {
-        return new Vector(
-            this.x + a.x,
-            this.y + a.y,
-        );
-    }
-
-    multiply(multiplicand: number) {
-        return new Vector(
-            this.x * multiplicand,
-            this.y * multiplicand,
         );
     }
 

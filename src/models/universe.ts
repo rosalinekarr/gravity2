@@ -56,7 +56,7 @@ export default class Universe {
     }
 
     update(timeDelta: number, opts: UniverseRuntimeOptions) {
-        this.particles.map((particle: Particle) => particle.update(timeDelta));
+        this.particles.map((particle: Particle) => particle.update(timeDelta * opts.timeScale));
       
         this.particles.map((pA: Particle) =>
             pA.applyForce(
@@ -65,10 +65,11 @@ export default class Universe {
                         const sqrDistance = ((pA.position.x - pB.position.x) ** 2) + ((pA.position.y - pB.position.y) ** 2);
                         if (sqrDistance > (pA.radius(opts) + pB.radius(opts)) ** 2) {
                             const force = opts.gravitationalConstant * pA.mass * pB.mass / sqrDistance;
-                            return new Vector(
-                                pB.position.x - pA.position.x,
-                                pB.position.y - pA.position.y,
-                            ).normalize().multiply(force).add(acc);
+                            return Vector.diff(pB.position, pA.position).normalize().multiply(force).add(acc);
+                        } else if (sqrDistance > 0.0) {
+                            return Vector.diff(pA.position, pB.position).normalize().multiply(
+                                Vector.dotProduct(pB.velocity, Vector.diff(pA.position, pB.position))
+                            ).add(acc);
                         }
                         return acc;
                     },

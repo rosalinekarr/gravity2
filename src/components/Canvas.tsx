@@ -1,26 +1,22 @@
-import { useEffect, useRef } from 'react'
-import useWindowSize from '../hooks/useWindowSize';
+import { useCallback, useEffect, useRef } from 'react';
+import {useSettings, useWindowSize} from '../hooks';
 import Universe from '../models/universe';
-import type {RenderParticleOpts} from '../renderers/particle';
-import type {RenderScaleOpts} from '../renderers/scale';
 import {renderBackground, renderParticles, renderScale} from '../renderers';
 
-type RenderOptions = RenderParticleOpts & RenderScaleOpts;
-
 interface CanvasProps {
-    renderOptions: RenderOptions;
     universe: Universe;
 }
 
-function Canvas({universe, renderOptions}: CanvasProps) {
+function Canvas({universe}: CanvasProps) {
+  const settings = useSettings();
   const [width, height] = useWindowSize();
   const canvasRef = useRef(null);
 
-  function draw(ctx: CanvasRenderingContext2D, _timestamp: DOMHighResTimeStamp) {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, _timestamp: DOMHighResTimeStamp) => {
     renderBackground(ctx);
-    renderParticles(ctx, universe.particles, renderOptions);
-    renderScale(ctx, renderOptions);
-  }
+    renderParticles(ctx, universe.particles, settings);
+    renderScale(ctx, settings);
+  }, [settings, universe]);
 
   useEffect(() => {
     if (canvasRef.current === null) return;
