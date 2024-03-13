@@ -14,6 +14,7 @@ module.exports = {
       'error',
       { "argsIgnorePattern": "^_" },
     ],
+    'indent': ['error', 'tab'],
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },

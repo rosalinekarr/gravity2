@@ -4,8 +4,8 @@ import NumberSetting from './NumberSetting';
 import SettingsProvider from './SettingsProvider';
 
 export {
-    BoolSetting,
-    ColorSetting,
-    NumberSetting,
-    SettingsProvider,
+	BoolSetting,
+	ColorSetting,
+	NumberSetting,
+	SettingsProvider,
 };

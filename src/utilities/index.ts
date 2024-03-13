@@ -1,9 +1,9 @@
 import {
-    camelToKebabCase,
-    camelToTitleCase,
+	camelToKebabCase,
+	camelToTitleCase,
 } from './strings';
 
 export {
-    camelToKebabCase,
-    camelToTitleCase,
+	camelToKebabCase,
+	camelToTitleCase,
 }

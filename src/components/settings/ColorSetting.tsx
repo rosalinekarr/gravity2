@@ -1,8 +1,8 @@
 import {
-    Grid,
-    InputAdornment,
-    TextField,
-    Typography,
+	Grid,
+	InputAdornment,
+	TextField,
+	Typography,
 } from '@mui/material';
 import {Circle} from '@mui/icons-material';
 import {Settings} from '../../contexts/settings';
@@ -17,33 +17,33 @@ interface ColorSettingProps {
 }
 
 function ColorSetting({
-    disabled,
-    icon,
-    name,
-    onChange,
-    value,
+	disabled,
+	icon,
+	name,
+	onChange,
+	value,
 }: ColorSettingProps) {
-  return (
-    <>
-        <Typography variant="body1" id={`${camelToKebabCase(name)}-color`} gutterBottom>{camelToTitleCase(name)}</Typography>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>{icon}</Grid>
-          <Grid item xs>
-            <TextField
-                aria-labelledby={`${camelToKebabCase(name)}-color`}
-                disabled={disabled}
-                value={value}
-                onChange={(e) => onChange(name, e.target.value)}
-                InputProps={{startAdornment: (
-                    <InputAdornment position="start">
-                        <Circle sx={{color: value}} />
-                    </InputAdornment>
-                )}}
-            />
-          </Grid>
-        </Grid>
-    </>
-  );
+	return (
+		<>
+			<Typography variant="body1" id={`${camelToKebabCase(name)}-color`} gutterBottom>{camelToTitleCase(name)}</Typography>
+			<Grid container spacing={2} alignItems="center">
+				<Grid item>{icon}</Grid>
+				<Grid item xs>
+					<TextField
+						aria-labelledby={`${camelToKebabCase(name)}-color`}
+						disabled={disabled}
+						value={value}
+						onChange={(e) => onChange(name, e.target.value)}
+						InputProps={{startAdornment: (
+							<InputAdornment position="start">
+								<Circle sx={{color: value}} />
+							</InputAdornment>
+						)}}
+					/>
+				</Grid>
+			</Grid>
+		</>
+	);
 }
 
 export default ColorSetting;

@@ -1,9 +1,6 @@
 import {createContext, Dispatch, SetStateAction} from 'react';
 
 export interface Settings {
-    forceLineColor: string;
-    forceLineScale: number;
-    forceLineWidth: number;
     gravitationalConstant: number;
     particleColor: string;
     particleDensity: number;
