@@ -16,11 +16,11 @@ interface UniverseConstructorArgs {
 }
 
 interface UniverseGenerateOptions {
-    maxMass: number;
-    minMass: number;
-    particleCount: number;
+    maxMass?: number;
+    minMass?: number;
+    particleCount?: number;
 	particleDensity?: number;
-    noOverlappingParticles: boolean;
+    noOverlappingParticles?: boolean;
 }
 
 export interface UniverseRuntimeOptions {
@@ -32,6 +32,14 @@ type UniverseSerialization = {
     particles: ParticleSerialization[];
     forces: ForceSerialization[];
 }
+
+const DEFAULT_OPTS = {
+	minMass: 10000000.0,
+	maxMass: 10000000000.0,
+	particleCount: 100,
+	particleDensity: 10.0,
+	noOverlappingParticles: true,
+};
 
 export default class Universe {
 	particles: Particle[];
@@ -45,13 +53,17 @@ export default class Universe {
 		];
 	}
 
-	static generate({
-		maxMass,
-		minMass,
-		particleCount,
-		particleDensity,
-		noOverlappingParticles,
-	}: UniverseGenerateOptions) {
+	static generate(opts: UniverseGenerateOptions = {}) {
+		const {
+			maxMass,
+			minMass,
+			particleCount,
+			particleDensity,
+			noOverlappingParticles,
+		} = {
+			...DEFAULT_OPTS,
+			...opts,
+		};
 		let particles: Particle[] = [];
 
 		for (let i = 0; i < particleCount; i++) {
@@ -68,7 +80,7 @@ export default class Universe {
 					mass,
 					name: `${TELESCOPE_NAMES[Math.floor(Math.random() * TELESCOPE_NAMES.length)]}-${Math.abs(Math.floor(x + y) % 100)}`,
 					position: new Vector(x, y),
-					radius: (mass / (4.0 * Math.PI / 3.0)) ** (1.0/3.0) / (particleDensity || 10.0),
+					radius: (mass / (4.0 * Math.PI / 3.0)) ** (1.0/3.0) / particleDensity,
 				})
 			} while (noOverlappingParticles && particles.find((existingParticle) =>
 				Particle.isOverlapping(newParticle, existingParticle)

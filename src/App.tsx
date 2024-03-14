@@ -1,31 +1,20 @@
 import {useEffect, useState} from 'react';
 import {
 	Box,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
 	Drawer,
 	Fab,
-	Grid,
-	Input,
 	List,
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
-	Slider,
-	Typography,
 } from '@mui/material';
 import {
 	Create,
 	Download,
-	Grain,
 	Menu,
 	Pause,
 	PlayArrow,
-	Scale,
 	Settings,
 	Upload,
 } from '@mui/icons-material';
@@ -34,27 +23,23 @@ import Canvas from './components/Canvas';
 import SettingsDialog from './components/SettingsDialog';
 import {useSettings} from './hooks';
 import {Particle, Universe} from './models';
+import NewUniverseDialog from './components/NewUniverseDialog';
 
-const DEFAULT_PARTICLE_COUNT = 100;
-const DEFAULT_MASS_RANGE = [100000000.0, 1000000000.0];
+interface HandleCreateUniverseArgs {
+	massRange: [number, number];
+	particleCount: number;
+}
 
 function App() {
 	const {timeScale} = useSettings();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
-	const [massRange, setMassRange] = useState(DEFAULT_MASS_RANGE);
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [particleCount, setParticleCount] = useState(DEFAULT_PARTICLE_COUNT);
 	const [paused, setPaused] = useState(true);
 	const [selectedParticles, setSelectedParticles] = useState<Particle[]>([]);
 	const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-	const [universe, setUniverse] = useState(Universe.generate({
-		maxMass: massRange[1],
-		minMass: massRange[0],
-		particleCount,
-		noOverlappingParticles: true,
-	}));
+	const [universe, setUniverse] = useState(Universe.generate());
 
-	function handleCreate() {
+	function handleCreate({massRange, particleCount}: HandleCreateUniverseArgs) {
 		setUniverse(Universe.generate({
 			maxMass: massRange[1],
 			minMass: massRange[0],
@@ -151,38 +136,7 @@ function App() {
 					</ListItem>
 				</List>
 			</Drawer>
-			<Dialog open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
-				<DialogTitle>New Universe</DialogTitle>
-				<DialogContent sx={{width: '50vw'}}>
-					<Typography variant="body1" id="particle-count" gutterBottom>Particle Count</Typography>
-					<Grid container spacing={2} alignItems="center">
-						<Grid item><Grain /></Grid>
-						<Grid item xs>
-							<Slider aria-labelledby="particle-count-slider" value={particleCount} onChange={(_, newVal: number | number[]) => {if (typeof newVal == 'number') setParticleCount(newVal)}} min={1} max={1000} step={1} />
-						</Grid>
-						<Grid item>
-							<Input value={particleCount} onChange={(e) => setParticleCount(e.target.value === '' ? 0 : Number(e.target.value))} inputProps={{step: 1, min: 1, max: 1000, type: 'number'}} />
-						</Grid>
-					</Grid>
-					<Typography variant="body1" id="mass-range" gutterBottom>Mass Range</Typography>
-					<Grid container spacing={2} alignItems="center">
-						<Grid item><Scale /></Grid>
-						<Grid item xs>
-							<Slider aria-labelledby="mass-range-slider" value={massRange} onChange={(_, newVal: number | number[]) => {if (typeof newVal == 'object' && newVal.length == 2) setMassRange(newVal)}} min={0} max={10000} step={1} />
-						</Grid>
-						<Grid item>
-							<Input value={massRange[0]} onChange={(e) => setMassRange([e.target.value === '' ? 0 : Number(e.target.value), massRange[1]])} inputProps={{step: 1, min: 0, max: massRange[1], type: 'number'}} />
-							<Typography variant="body1"> - </Typography>
-							<Input value={massRange[1]} onChange={(e) => setMassRange([massRange[0], e.target.value === '' ? 0 : Number(e.target.value)])} inputProps={{step: 1, min: massRange[0], max: 10000, type: 'number'}} />
-							<Typography variant="body1"> kg</Typography>
-						</Grid>
-					</Grid>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setCreateModalOpen(false)}>Cancel</Button>
-					<Button onClick={handleCreate}>Create</Button>
-				</DialogActions>
-			</Dialog>
+			<NewUniverseDialog open={createModalOpen} onClose={() => setCreateModalOpen(false)} onCreate={handleCreate} />
 			<SettingsDialog open={settingsDialogOpen} onClose={() => setSettingsDialogOpen(false)} />
 			<Canvas universe={universe} onSelect={(particles) => setSelectedParticles(particles)} selectedParticles={selectedParticles} />
 			<Fab
