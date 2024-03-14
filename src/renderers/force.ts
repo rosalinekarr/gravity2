@@ -1,7 +1,8 @@
 import {Force, Particle, Vector} from '../models';
-import { UniverseRuntimeOptions } from '../models/universe';
 
-type RenderForceVectorOpts = UniverseRuntimeOptions & {scale: number};
+interface RenderForceVectorOpts {
+	scale: number;
+}
 
 function renderForceVector(ctx: CanvasRenderingContext2D, forceVector: Vector, particle: Particle, opts: RenderForceVectorOpts) {
 	const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
@@ -17,7 +18,7 @@ function renderForce(ctx: CanvasRenderingContext2D, force: Force, particles: Par
 	ctx.lineWidth = force.lineWidth;
 	ctx.strokeStyle = force.lineColor;
 
-	force.calculateForces(particles, opts).forEach((forceVector, i) =>
+	force.calculateForces(particles).forEach((forceVector, i) =>
 		renderForceVector(ctx, forceVector.multiply(force.lineScale), particles[i], opts)
 	)
 }

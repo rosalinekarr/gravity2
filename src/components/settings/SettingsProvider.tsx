@@ -6,13 +6,19 @@ interface SettingsProviderProps {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-	gravitationalConstant: 6.674 * (10.0 ** -11),
+	font: '10px Kode Mono',
+	highlightLineColor: '#FF00FF',
+	highlightLineWidth: 1.0,
+	nameOffsetX: 1,
+	nameOffsetY: 1,
 	particleColor: '#FFFFFF',
-	particleDensity: 1000.0,
 	scale: 10.0,
+	selectionHighlightOffset: 2.0,
 	showForces: true,
+	showNames: true,
 	showScale: true,
 	showVelocities: true,
+	textColor: '#FFFFFF',
 	timeScale: 40.0,
 	velocityLineColor: '#FF0000',
 	velocityLineScale: 10000.0,

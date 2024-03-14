@@ -33,29 +33,24 @@ import './App.css';
 import Canvas from './components/Canvas';
 import SettingsDialog from './components/SettingsDialog';
 import {useSettings} from './hooks';
-import {Universe} from './models';
+import {Particle, Universe} from './models';
 
 const DEFAULT_PARTICLE_COUNT = 100;
 const DEFAULT_MASS_RANGE = [100000000.0, 1000000000.0];
 
 function App() {
-	const {
-		gravitationalConstant,
-		particleDensity,
-		timeScale,
-	} = useSettings();
-
+	const {timeScale} = useSettings();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
 	const [massRange, setMassRange] = useState(DEFAULT_MASS_RANGE);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [particleCount, setParticleCount] = useState(DEFAULT_PARTICLE_COUNT);
 	const [paused, setPaused] = useState(true);
+	const [selectedParticles, setSelectedParticles] = useState<Particle[]>([]);
 	const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 	const [universe, setUniverse] = useState(Universe.generate({
 		maxMass: massRange[1],
 		minMass: massRange[0],
 		particleCount,
-		particleDensity,
 		noOverlappingParticles: true,
 	}));
 
@@ -64,7 +59,6 @@ function App() {
 			maxMass: massRange[1],
 			minMass: massRange[0],
 			particleCount,
-			particleDensity,
 			noOverlappingParticles: true,
 		}));
 		setCreateModalOpen(false);
@@ -111,11 +105,7 @@ function App() {
 			const now = Date.now();
 			const timeDelta = (now - lastTick);
 
-			universe.update(timeDelta, {
-				gravitationalConstant,
-				particleDensity,
-				timeScale,
-			});
+			universe.update(timeDelta * timeScale);
 
 			lastTick = now;
 			timeoutId = setTimeout(tick, 0);
@@ -123,7 +113,7 @@ function App() {
 
 		timeoutId = setTimeout(tick, 0);
 		return () => clearTimeout(timeoutId!);
-	}, [gravitationalConstant, particleDensity, paused, timeScale, universe]);
+	}, [paused, timeScale, universe]);
 
 	return (
 		<Box>
@@ -194,7 +184,7 @@ function App() {
 				</DialogActions>
 			</Dialog>
 			<SettingsDialog open={settingsDialogOpen} onClose={() => setSettingsDialogOpen(false)} />
-			<Canvas universe={universe} />
+			<Canvas universe={universe} onSelect={(particles) => setSelectedParticles(particles)} selectedParticles={selectedParticles} />
 			<Fab
 				sx={{position: 'absolute', top: 16, left: 16}}
 				color="primary"

@@ -1,13 +1,19 @@
 import {createContext, Dispatch, SetStateAction} from 'react';
 
 export interface Settings {
-    gravitationalConstant: number;
+    font: string;
+    highlightLineColor: string;
+    highlightLineWidth: number;
+    nameOffsetX: number;
+    nameOffsetY: number;
     particleColor: string;
-    particleDensity: number;
     scale: number;
+    selectionHighlightOffset: number;
     showForces: boolean;
+    showNames: boolean;
     showScale: boolean;
     showVelocities: boolean;
+    textColor: string;
     timeScale: number;
     velocityLineColor: string;
     velocityLineScale: number;

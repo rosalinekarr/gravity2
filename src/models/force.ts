@@ -1,9 +1,8 @@
 import Color from './color';
 import Particle from './particle';
 import Vector from './vector';
-import type {UniverseRuntimeOptions} from './universe';
 
-type ForceFn = (pA: Particle, pB: Particle, opts: UniverseRuntimeOptions) => Vector;
+type ForceFn = (pA: Particle, pB: Particle) => Vector;
 
 interface ForceConstructorOpts {
     lineColor?: string;
@@ -32,21 +31,22 @@ export default class Force {
 	}
 
 	static gravity(opts: ForceConstructorOpts = {}) {
-		return new Force((pA, pB, opts) => {
+		return new Force((pA, pB) => {
+			const G = 6.674 * (10.0 ** -11);
 			const pDiff = Vector.diff(pB.position, pA.position);
 			const distance = pDiff.magnitude();
-			if (Particle.isOverlapping(pA, pB, opts)) return Vector.zero();
-			return pDiff.normalize().multiply(opts.gravitationalConstant * pA.mass * pB.mass / (distance ** 2));
+			if (Particle.isOverlapping(pA, pB)) return Vector.zero();
+			return pDiff.normalize().multiply(G * pA.mass * pB.mass / (distance ** 2));
 		}, opts);
 	}
 
 	static normal(opts: ForceConstructorOpts = {}) {
-		return new Force((pA, pB, opts) => {
+		return new Force((pA, pB) => {
 			const pDiff = Vector.diff(pB.position, pA.position);
 			const distance = pDiff.magnitude();
-			if (!Particle.isOverlapping(pA, pB, opts) || distance === 0.0) return Vector.zero();
+			if (!Particle.isOverlapping(pA, pB) || distance === 0.0) return Vector.zero();
 			return pDiff.normalize().multiply(
-				Vector.dotProduct(pB.momentum(opts).add(pA.momentum(opts).multiply(-1)), pDiff.normalize())
+				Vector.dotProduct(pB.momentum().add(pA.momentum().multiply(-1)), pDiff.normalize())
 			);
 		}, opts);
 	}
@@ -55,10 +55,10 @@ export default class Force {
 		return new Force(eval(forceFnSource), opts);
 	}
 
-	calculateForces(particles: Particle[], opts: UniverseRuntimeOptions): Vector[] {
+	calculateForces(particles: Particle[]): Vector[] {
 		return particles.map((pA: Particle): Vector =>
 			particles.map((pB: Particle): Vector =>
-				this.forceFn(pA, pB, opts)
+				this.forceFn(pA, pB)
 			).reduce((a, x) => a.add(x))
 		);
 	}

@@ -2,6 +2,14 @@ import Force, {ForceSerialization} from './force';
 import Particle, {ParticleSerialization} from './particle';
 import Vector from './vector';
 
+const TELESCOPE_NAMES: string[] = [
+	'BATS',
+	'Manley',
+	'FAU',
+	'TRAPPY',
+	'HORNeT',
+];
+
 interface UniverseConstructorArgs {
     forces?: Force[];
     particles: Particle[];
@@ -11,13 +19,12 @@ interface UniverseGenerateOptions {
     maxMass: number;
     minMass: number;
     particleCount: number;
-    particleDensity: number;
+	particleDensity?: number;
     noOverlappingParticles: boolean;
 }
 
 export interface UniverseRuntimeOptions {
     gravitationalConstant: number;
-    particleDensity: number;
     timeScale: number;
 }
 
@@ -53,15 +60,18 @@ export default class Universe {
 			do {
 				const randPositionRadius = Math.sqrt(Math.random()) * 3000.0;
 				const randPositionAngle = Math.random() * Math.PI * 2.0;
+				const x = Math.sin(randPositionAngle) * randPositionRadius;
+				const y = Math.cos(randPositionAngle) * randPositionRadius;
+				const mass = Math.random() * (maxMass - minMass) + minMass;
+
 				newParticle = new Particle({
-					mass: Math.random() * (maxMass - minMass) + minMass,
-					position: new Vector(
-						Math.sin(randPositionAngle) * randPositionRadius,
-						Math.cos(randPositionAngle) * randPositionRadius,
-					),
+					mass,
+					name: `${TELESCOPE_NAMES[Math.floor(Math.random() * TELESCOPE_NAMES.length)]}-${Math.abs(Math.floor(x + y) % 100)}`,
+					position: new Vector(x, y),
+					radius: (mass / (4.0 * Math.PI / 3.0)) ** (1.0/3.0) / (particleDensity || 10.0),
 				})
 			} while (noOverlappingParticles && particles.find((existingParticle) =>
-				Particle.isOverlapping(newParticle, existingParticle, {particleDensity})
+				Particle.isOverlapping(newParticle, existingParticle)
 			));
     
 			particles = [
@@ -80,12 +90,18 @@ export default class Universe {
 		});
 	}
 
-	update(timeDelta: number, opts: UniverseRuntimeOptions) {
-		this.particles.forEach((particle: Particle) => particle.update(timeDelta * opts.timeScale));
+	selectParticles(x: number, y: number): Particle[] {
+		return this.particles.filter((p) => 
+			(new Vector(x, y)).add(p.position.multiply(-1)).magnitude() < p.radius
+		)
+	}
+
+	update(timeDelta: number) {
+		this.particles.forEach((particle: Particle) => particle.update(timeDelta));
       
 		this.forces.forEach((force: Force) => {
 			force
-				.calculateForces(this.particles, opts)
+				.calculateForces(this.particles)
 				.forEach((f: Vector, i) =>
 					this.particles[i].applyForce(f)
 				)

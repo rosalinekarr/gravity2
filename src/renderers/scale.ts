@@ -1,4 +1,5 @@
 export interface RenderScaleOpts {
+	font: string;
     scale?: number;
     showScale?: boolean;
 }
@@ -33,31 +34,31 @@ function getScale(opts: RenderScaleOpts) {
 
 export default function renderScale(ctx: CanvasRenderingContext2D, opts: RenderScaleOpts) {
 	if (!opts.showScale) return;
-	ctx.font = "10px Roboto";
+	ctx.font = opts.font;
 	ctx.fillStyle = '#FFFFFF';
 	ctx.strokeStyle = '#FFFFFF';
   
 	const scaleOrder = Math.floor(Math.log10(getScale(opts)));
 	const scaleFactor = getScale(opts) / (10.0 ** scaleOrder);
   
-	ctx.fillText(STANDARD_SCALES[scaleOrder + 4], 110 + 100 / scaleFactor, ctx.canvas.height - 100);
-  
 	ctx.beginPath();
-	ctx.moveTo(100, ctx.canvas.height - 110);
-	ctx.lineTo(100, ctx.canvas.height - 90);
-	ctx.lineTo(100, ctx.canvas.height - 100);
+	ctx.moveTo(ctx.canvas.width - 200, ctx.canvas.height - 110);
+	ctx.lineTo(ctx.canvas.width - 200, ctx.canvas.height - 90);
+	ctx.lineTo(ctx.canvas.width - 200, ctx.canvas.height - 100);
   
 	if (scaleFactor < 7.5) {
 		for (let i = 10; i < 100; i += 10) {
-			ctx.lineTo(100 + i / scaleFactor, ctx.canvas.height - 100);
-			ctx.lineTo(100 + i / scaleFactor, ctx.canvas.height - 95);
-			ctx.lineTo(100 + i / scaleFactor, ctx.canvas.height - 105);
-			ctx.lineTo(100 + i / scaleFactor, ctx.canvas.height - 100);
+			ctx.lineTo(ctx.canvas.width - 200 + i / scaleFactor, ctx.canvas.height - 100);
+			ctx.lineTo(ctx.canvas.width - 200 + i / scaleFactor, ctx.canvas.height - 95);
+			ctx.lineTo(ctx.canvas.width - 200 + i / scaleFactor, ctx.canvas.height - 105);
+			ctx.lineTo(ctx.canvas.width - 200 + i / scaleFactor, ctx.canvas.height - 100);
 		}
 	}
   
-	ctx.lineTo(100 + 100 / scaleFactor, ctx.canvas.height - 100);
-	ctx.lineTo(100 + 100 / scaleFactor, ctx.canvas.height - 90);
-	ctx.lineTo(100 + 100 / scaleFactor, ctx.canvas.height - 110);
+	ctx.lineTo(ctx.canvas.width - 200 + 100 / scaleFactor, ctx.canvas.height - 100);
+	ctx.lineTo(ctx.canvas.width - 200 + 100 / scaleFactor, ctx.canvas.height - 90);
+	ctx.lineTo(ctx.canvas.width - 200 + 100 / scaleFactor, ctx.canvas.height - 110);
 	ctx.stroke();
+  
+	ctx.fillText(STANDARD_SCALES[scaleOrder + 4], ctx.canvas.width - 190 + 100 / scaleFactor, ctx.canvas.height - 100);
 }

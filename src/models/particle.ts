@@ -2,41 +2,51 @@ import Vector, {VectorSerialization} from './vector';
 
 interface ParticleConstructorArgs {
     mass: number;
+	name: string;
     position: Vector;
+	radius: number;
     velocity?: Vector;
 }
 
 export type ParticleSerialization = {
     mass: number;
+	name: string;
     position: VectorSerialization;
+	radius: number;
     velocity: VectorSerialization;
 }
 
 export default class Particle {
 	mass: number;
+	name: string;
 	position: Vector;
+	radius: number;
 	velocity: Vector;
 
-	constructor({mass, position, velocity}: ParticleConstructorArgs) {
+	constructor({mass, name, position, radius, velocity}: ParticleConstructorArgs) {
 		this.mass = mass;
+		this.name = name;
 		this.position = position;
+		this.radius = radius;
 		this.velocity = velocity || new Vector(0.0, 0.0);
 	}
 
-	static deserialize({mass, position, velocity}: ParticleSerialization) {
+	static deserialize({mass, name, radius, position, velocity}: ParticleSerialization) {
 		return new Particle({
 			mass,
+			name,
 			position: Vector.deserialize(position),
+			radius,
 			...(velocity ? {
 				velocity: Vector.deserialize(velocity),
 			} : {}),
 		});
 	}
 
-	static isOverlapping(pA: Particle, pB: Particle, opts: {particleDensity: number}) {
+	static isOverlapping(pA: Particle, pB: Particle) {
 		const pDiff = Vector.diff(pB.position, pA.position);
 		const distance = pDiff.magnitude();
-		return distance < pA.radius(opts) + pB.radius(opts);
+		return distance < pA.radius + pB.radius;
 	}
 
 	update(timeDelta: number) {
@@ -53,19 +63,17 @@ export default class Particle {
 		);
 	}
 
-	radius(opts: {particleDensity: number}) {
-		return 0.62035 * ((this.mass / opts.particleDensity) ** (1.0/3.0));
-	}
-
-	momentum(_opts: {particleDensity: number}) {
+	momentum() {
 		return this.velocity.multiply(this.mass);
 	}
 
 	serialize(): ParticleSerialization {
 		return {
-			position: this.position.serialize(),
-			velocity: this.velocity.serialize(),
 			mass: this.mass,
+			name: this.name,
+			position: this.position.serialize(),
+			radius: this.radius,
+			velocity: this.velocity.serialize(),
 		};
 	}
 }
