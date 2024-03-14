@@ -11,6 +11,13 @@ interface ForceConstructorOpts {
     lineWidth?: number;
 }
 
+export interface ForceSerialization {
+	forceFn: string;
+    lineColor: string;
+    lineScale: number;
+    lineWidth: number;
+}
+
 export default class Force {
 	forceFn: ForceFn;
 	lineColor: string;
@@ -24,40 +31,44 @@ export default class Force {
 		this.lineWidth = opts.lineWidth || 1.0;
 	}
 
-	static gravity() {
-		return new Force((pA, pB, opts) => {
-			const pDiff = Vector.diff(pB.position, pA.position);``
-			const distance = pDiff.magnitude();
-			if (distance < pA.radius(opts) + pB.radius(opts)) return Vector.zero();
-			return pDiff.normalize().multiply(opts.gravitationalConstant * pA.mass * pB.mass / (distance ** 2));
-		});
-	}
-
-	static normal() {
+	static gravity(opts: ForceConstructorOpts = {}) {
 		return new Force((pA, pB, opts) => {
 			const pDiff = Vector.diff(pB.position, pA.position);
-			const relativeVelocity = Vector.diff(pB.velocity, pA.velocity);
 			const distance = pDiff.magnitude();
-			if (distance > pA.radius(opts) + pB.radius(opts) || distance === 0.0) return Vector.zero();
-			return pDiff.normalize().multiply(-pB.mass * (
-				(
-					pA.radius(opts) + pB.radius(opts) - distance
-				) * (
-					(Vector.dotProduct(relativeVelocity, pDiff) / distance) ** 2
-				)
-			))
-		});
+			if (Particle.isOverlapping(pA, pB, opts)) return Vector.zero();
+			return pDiff.normalize().multiply(opts.gravitationalConstant * pA.mass * pB.mass / (distance ** 2));
+		}, opts);
+	}
+
+	static normal(opts: ForceConstructorOpts = {}) {
+		return new Force((pA, pB, opts) => {
+			const pDiff = Vector.diff(pB.position, pA.position);
+			const distance = pDiff.magnitude();
+			if (!Particle.isOverlapping(pA, pB, opts) || distance === 0.0) return Vector.zero();
+			return pDiff.normalize().multiply(
+				Vector.dotProduct(pB.momentum(opts).add(pA.momentum(opts).multiply(-1)), pDiff.normalize())
+			);
+		}, opts);
+	}
+
+	static deserialize({forceFn: forceFnSource, ...opts}: ForceSerialization) {
+		return new Force(eval(forceFnSource), opts);
 	}
 
 	calculateForces(particles: Particle[], opts: UniverseRuntimeOptions): Vector[] {
 		return particles.map((pA: Particle): Vector =>
-			particles.reduce(
-				(acc: Vector, pB: Particle): Vector => 
-					acc.add(
-						this.forceFn(pA, pB, opts)
-					),
-				new Vector(0.0, 0.0),
-			)
+			particles.map((pB: Particle): Vector =>
+				this.forceFn(pA, pB, opts)
+			).reduce((a, x) => a.add(x))
 		);
+	}
+
+	serialize(): ForceSerialization {
+		return {
+			forceFn: this.forceFn.toString(),
+			lineColor: this.lineColor,
+			lineScale: this.lineScale,
+			lineWidth: this.lineWidth,
+		};
 	}
 }

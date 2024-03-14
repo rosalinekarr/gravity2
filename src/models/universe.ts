@@ -1,8 +1,9 @@
-import Force from './force';
+import Force, {ForceSerialization} from './force';
 import Particle, {ParticleSerialization} from './particle';
 import Vector from './vector';
 
 interface UniverseConstructorArgs {
+    forces?: Force[];
     particles: Particle[];
 }
 
@@ -22,17 +23,18 @@ export interface UniverseRuntimeOptions {
 
 type UniverseSerialization = {
     particles: ParticleSerialization[];
+    forces: ForceSerialization[];
 }
 
 export default class Universe {
 	particles: Particle[];
 	forces: Force[];
 
-	constructor({particles}: UniverseConstructorArgs) {
+	constructor({forces, particles}: UniverseConstructorArgs) {
 		this.particles = particles;
-		this.forces = [
-			Force.gravity(),
-			Force.normal(),
+		this.forces = forces || [
+			Force.gravity({lineColor: '#00FF00'}),
+			Force.normal({lineColor: '#0000FF'}),
 		];
 	}
 
@@ -71,9 +73,10 @@ export default class Universe {
 		return new Universe({particles});
 	}
 
-	static deserialize({particles}: UniverseSerialization) {
+	static deserialize({particles, forces}: UniverseSerialization) {
 		return new Universe({
 			particles: particles.map(Particle.deserialize),
+			forces: forces.map(Force.deserialize),
 		});
 	}
 
@@ -92,6 +95,7 @@ export default class Universe {
 	serialize(): UniverseSerialization {
 		return {
 			particles: this.particles.map((p) => p.serialize()),
+			forces: this.forces.map((f) => f.serialize()),
 		};
 	}
 }

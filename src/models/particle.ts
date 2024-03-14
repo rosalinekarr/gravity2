@@ -54,7 +54,11 @@ export default class Particle {
 	}
 
 	radius(opts: {particleDensity: number}) {
-		return Math.abs((this.mass / opts.particleDensity) ** (1.0/3.0));
+		return 0.62035 * ((this.mass / opts.particleDensity) ** (1.0/3.0));
+	}
+
+	momentum(_opts: {particleDensity: number}) {
+		return this.velocity.multiply(this.mass);
 	}
 
 	serialize(): ParticleSerialization {

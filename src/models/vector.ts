@@ -65,4 +65,8 @@ export default class Vector {
 	serialize(): VectorSerialization {
 		return [this.x, this.y];
 	}
+
+	toString() {
+		return `(${this.x},${this.y})`;
+	}
 }
