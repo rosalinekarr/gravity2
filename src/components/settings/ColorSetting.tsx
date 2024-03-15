@@ -1,3 +1,4 @@
+import {useMemo} from 'react';
 import {
 	Grid,
 	InputAdornment,
@@ -23,14 +24,16 @@ function ColorSetting({
 	onChange,
 	value,
 }: ColorSettingProps) {
+	const ariaLabel = useMemo(() => `${camelToKebabCase(name)}-input`, [name]);
+
 	return (
 		<>
-			<Typography variant="body1" id={`${camelToKebabCase(name)}-color`} gutterBottom>{camelToTitleCase(name)}</Typography>
+			<Typography variant="body1" id={ariaLabel} gutterBottom>{camelToTitleCase(name)}</Typography>
 			<Grid container spacing={2} alignItems="center">
 				<Grid item>{icon}</Grid>
 				<Grid item xs>
 					<TextField
-						aria-labelledby={`${camelToKebabCase(name)}-color`}
+						aria-labelledby={ariaLabel}
 						disabled={disabled}
 						value={value}
 						onChange={(e) => onChange(name, e.target.value)}

@@ -7,7 +7,7 @@ export interface Settings {
     nameOffsetX: number;
     nameOffsetY: number;
     particleColor: string;
-    scale: number;
+    scaleRate: number;
     selectionHighlightOffset: number;
     showForces: boolean;
     showNames: boolean;

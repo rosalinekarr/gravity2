@@ -1,11 +1,12 @@
 import renderBackground from './background';
 import renderForces from './force';
-import renderParticles from './particle';
+import {renderSelectedParticles, renderParticles} from './particle';
 import renderScale from './scale';
 
 export {
 	renderBackground,
 	renderForces,
+	renderSelectedParticles,
 	renderParticles,
 	renderScale,
 };

@@ -100,6 +100,17 @@ function App() {
 		return () => clearTimeout(timeoutId!);
 	}, [paused, timeScale, universe]);
 
+	useEffect(() => {
+		function handleKeydown(e: KeyboardEvent) {
+			if (e.code === 'Space' && !e.repeat) setPaused((prevPaused) => !prevPaused);
+		}
+
+		document.addEventListener('keydown', handleKeydown);
+		return () => {
+			document.removeEventListener('keydown', handleKeydown);
+		};
+	}, []);
+
 	return (
 		<Box>
 			<Drawer open={menuOpen} onClose={() => setMenuOpen(false)}>

@@ -1,3 +1,4 @@
+import {useMemo} from 'react';
 import {
 	Grid,
 	Input,
@@ -28,14 +29,16 @@ function NumberSetting({
 	step,
 	value,
 }: NumberSettingProps) {
+	const ariaLabel = useMemo(() => `${camelToKebabCase(name)}-slider`, [name]);
+	
 	return (
 		<>
-			<Typography variant="body1" id={`${camelToKebabCase(name)}-slider`} gutterBottom>{camelToTitleCase(name)}</Typography>
+			<Typography variant="body1" id={ariaLabel} gutterBottom>{camelToTitleCase(name)}</Typography>
 			<Grid container spacing={2} alignItems="center">
 				<Grid item>{icon}</Grid>
 				<Grid item xs>
 					<Slider
-						aria-labelledby={`${camelToKebabCase(name)}-slider`}
+						aria-labelledby={ariaLabel}
 						disabled={disabled}
 						value={value}
 						onChange={(_, newVal: number | number[]) => {if (typeof newVal == 'number') onChange(name, newVal)}}
@@ -45,7 +48,7 @@ function NumberSetting({
 					/>
 				</Grid><Grid item>
 					<Input
-						aria-labelledby={`${camelToKebabCase(name)}-slider`}
+						aria-labelledby={ariaLabel}
 						disabled={disabled}
 						value={value}
 						onChange={(e) => {if (e.target.value !== '') onChange(name, Number(e.target.value))}}

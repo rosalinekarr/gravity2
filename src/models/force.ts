@@ -45,8 +45,12 @@ export default class Force {
 			const pDiff = Vector.diff(pB.position, pA.position);
 			const distance = pDiff.magnitude();
 			if (!Particle.isOverlapping(pA, pB) || distance === 0.0) return Vector.zero();
+			if (Vector.dotProduct(Vector.diff(pA.velocity, pB.velocity), pDiff.normalize()) < 0.0) return Vector.zero();
 			return pDiff.normalize().multiply(
-				Vector.dotProduct(pB.momentum().add(pA.momentum().multiply(-1)), pDiff.normalize())
+				Vector.dotProduct(
+					Vector.diff(pB.momentum(), pA.momentum()),
+					pDiff.normalize(),
+				)
 			);
 		}, opts);
 	}

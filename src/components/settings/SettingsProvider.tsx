@@ -8,21 +8,21 @@ interface SettingsProviderProps {
 const DEFAULT_SETTINGS: Settings = {
 	font: '10px Kode Mono',
 	highlightLineColor: '#FF00FF',
-	highlightLineWidth: 1.0,
+	highlightLineWidth: 2.0,
 	nameOffsetX: 1,
 	nameOffsetY: 1,
 	particleColor: '#FFFFFF',
-	scale: 10.0,
+	scaleRate: 0.001,
 	selectionHighlightOffset: 2.0,
-	showForces: true,
+	showForces: false,
 	showNames: true,
 	showScale: true,
 	showVelocities: true,
 	textColor: '#FFFFFF',
 	timeScale: 40.0,
 	velocityLineColor: '#FF0000',
-	velocityLineScale: 10000.0,
-	velocityLineWidth: 1.5,
+	velocityLineScale: 1000.0,
+	velocityLineWidth: 1.0,
 };
 
 function SettingsProvider({children}: SettingsProviderProps) {

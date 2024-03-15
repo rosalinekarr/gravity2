@@ -1,3 +1,4 @@
+import {useMemo} from 'react';
 import {
 	Grid,
 	Switch,
@@ -19,14 +20,16 @@ function BoolSetting({
 	onChange,
 	value,
 }: BoolSettingProps) {
+	const ariaLabel = useMemo(() => `${camelToKebabCase(name)}-toggle`, [name]);
+	
 	return (
 		<>
-			<Typography variant="body1" id={`${camelToKebabCase(name)}-toggle`} gutterBottom>{camelToTitleCase(name)}</Typography>
+			<Typography variant="body1" id={ariaLabel} gutterBottom>{camelToTitleCase(name)}</Typography>
 			<Grid container spacing={2} alignItems="center">
 				<Grid item>{icon}</Grid>
 				<Grid item xs>
 					<Switch
-						aria-labelledby={`${camelToKebabCase(name)}-toggle`}
+						aria-labelledby={ariaLabel}
 						checked={value}
 						onChange={(e) => onChange(name, e.target.checked)} />
 				</Grid>

@@ -17,7 +17,6 @@ function SettingsDialog(props: DialogProps) {
 	const {
 		changeSetting,
 		particleColor,
-		scale,
 		showForces,
 		showScale,
 		showVelocities,
@@ -38,7 +37,6 @@ function SettingsDialog(props: DialogProps) {
 				<BoolSetting name='showForces' value={showForces} icon={<Straight />} onChange={changeSetting} />
 				<BoolSetting name='showScale' value={showScale} icon={<Straight />} onChange={changeSetting} />
 				<ColorSetting name='particleColor' value={particleColor} icon={<Palette />} onChange={changeSetting} />
-				<NumberSetting name='scale' value={scale} icon={<LinearScale />} onChange={changeSetting} />
 				<NumberSetting name='timeScale' value={timeScale} icon={<HourglassFull />} onChange={changeSetting} />
 			</DialogContent>
 		</Dialog>

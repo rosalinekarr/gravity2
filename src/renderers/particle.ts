@@ -1,4 +1,4 @@
-import {Particle} from '../models';
+import {Particle, Vector} from '../models';
 
 export interface RenderParticleOpts {
 	font: string;
@@ -7,7 +7,6 @@ export interface RenderParticleOpts {
 	nameOffsetX: number;
 	nameOffsetY: number;
     particleColor: string;
-    scale: number;
 	selectionHighlightOffset: number;
     showForces: boolean;
 	showNames: boolean;
@@ -18,63 +17,67 @@ export interface RenderParticleOpts {
     velocityLineWidth: number;
 }
 
-function renderParticleBody(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-	const radius = particle.radius / opts.scale;
-	const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
-	const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
-
+function renderParticleBody(ctx: CanvasRenderingContext2D, particle: Particle) {
 	ctx.beginPath();
-	ctx.arc(scrnX, scrnY, radius, 0, Math.PI * 2);
+	ctx.arc(particle.position.x, particle.position.y, particle.radius, 0, Math.PI * 2);
 	ctx.fill();
 }
 
-function renderName(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-	const radius = particle.radius / opts.scale;
-	const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
-	const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
-
-	ctx.fillText(particle.name, scrnX + radius + opts.nameOffsetX, scrnY - radius - opts.nameOffsetY);
+function renderName(ctx: CanvasRenderingContext2D, particle: Particle, offset: Vector, scale: number, opts: RenderParticleOpts) {
+	ctx.fillText(
+		particle.name,
+		(particle.position.x * scale) + offset.x + (particle.radius * scale) + opts.nameOffsetX,
+		(particle.position.y * scale) + offset.y - (particle.radius * scale) - opts.nameOffsetY,
+	);
 }
 
-function renderVelocity(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-	const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
-	const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
+function renderVelocity(ctx: CanvasRenderingContext2D, particle: Particle, offset: Vector, scale: number, opts: RenderParticleOpts) {
 	const lineVector = particle.velocity.multiply(opts.velocityLineScale);
 
 	ctx.beginPath();
-	ctx.moveTo(scrnX, scrnY);
-	ctx.lineTo(scrnX + lineVector.x / opts.scale, scrnY + lineVector.y / opts.scale);
+	ctx.moveTo(
+		(particle.position.x * scale) + offset.x,
+		(particle.position.y * scale) + offset.y,
+	);
+	ctx.lineTo(
+		(particle.position.x * scale) + offset.x + lineVector.x,
+		(particle.position.y * scale) + offset.y + lineVector.y,
+	);
 	ctx.stroke();
 }
 
-function renderSelectionHighlights(ctx: CanvasRenderingContext2D, particle: Particle, opts: RenderParticleOpts) {
-	const radius = opts.selectionHighlightOffset + particle.radius / opts.scale;
-	const scrnX = (particle.position.x / opts.scale) + (ctx.canvas.width/2);
-	const scrnY = (particle.position.y / opts.scale) + (ctx.canvas.height/2);
-
+function renderSelectionHighlights(ctx: CanvasRenderingContext2D, particle: Particle, offset: Vector, scale: number, opts: RenderParticleOpts) {
 	ctx.beginPath();
-	ctx.arc(scrnX, scrnY, radius, 0, Math.PI * 2);
+	ctx.arc(
+		(particle.position.x * scale) + offset.x,
+		(particle.position.y * scale) + offset.y,
+		opts.selectionHighlightOffset + (particle.radius * scale),
+		0,
+		Math.PI * 2,
+	);
 	ctx.stroke();
 }
 
-export default function renderParticles(ctx: CanvasRenderingContext2D, particles: Particle[], selectedParticles: Particle[], opts: RenderParticleOpts) {
+export function renderParticles(ctx: CanvasRenderingContext2D, particles: Particle[], opts: RenderParticleOpts) {
+	ctx.fillStyle = opts.particleColor;
+	particles.forEach((p) => renderParticleBody(ctx, p));
+}
+
+export function renderSelectedParticles(ctx: CanvasRenderingContext2D, selectedParticles: Particle[], offset: Vector, scale: number, opts: RenderParticleOpts) {
 	const {showNames, showVelocities} = opts;
 	ctx.lineCap = 'round';
-
-	ctx.fillStyle = opts.particleColor;
-	particles.forEach((p) => renderParticleBody(ctx, p, opts));
 
 	ctx.lineWidth = opts.velocityLineWidth;
 	ctx.strokeStyle = opts.velocityLineColor;
 	if (showVelocities)
-		particles.forEach((p) => renderVelocity(ctx, p, opts));
+		selectedParticles.forEach((p) => renderVelocity(ctx, p, offset, scale, opts));
 
 	ctx.fillStyle = opts.textColor;
 	ctx.font = opts.font;
 	if (showNames)
-		particles.forEach((p) => renderName(ctx, p, opts));
+		selectedParticles.forEach((p) => renderName(ctx, p, offset, scale, opts));
 
 	ctx.lineWidth = opts.highlightLineWidth;
 	ctx.strokeStyle = opts.highlightLineColor;
-	selectedParticles.forEach((p) => renderSelectionHighlights(ctx, p, opts));
+	selectedParticles.forEach((p) => renderSelectionHighlights(ctx, p, offset, scale, opts));
 }
