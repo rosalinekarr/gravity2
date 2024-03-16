@@ -5,7 +5,6 @@ import {
 	DialogTitle,
 } from '@mui/material';
 import {
-	HourglassFull,
 	LinearScale,
 	Palette,
 	Straight,
@@ -20,7 +19,6 @@ function SettingsDialog(props: DialogProps) {
 		showForces,
 		showScale,
 		showVelocities,
-		timeScale,
 		velocityLineColor,
 		velocityLineScale,
 		velocityLineWidth,
@@ -37,7 +35,6 @@ function SettingsDialog(props: DialogProps) {
 				<BoolSetting name='showForces' value={showForces} icon={<Straight />} onChange={changeSetting} />
 				<BoolSetting name='showScale' value={showScale} icon={<Straight />} onChange={changeSetting} />
 				<ColorSetting name='particleColor' value={particleColor} icon={<Palette />} onChange={changeSetting} />
-				<NumberSetting name='timeScale' value={timeScale} icon={<HourglassFull />} onChange={changeSetting} />
 			</DialogContent>
 		</Dialog>
 	);

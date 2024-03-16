@@ -12,7 +12,10 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-unused-vars': [
       'error',
-      { "argsIgnorePattern": "^_" },
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+      },
     ],
     'indent': ['error', 'tab'],
     'react-refresh/only-export-components': [

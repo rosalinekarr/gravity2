@@ -19,7 +19,6 @@ const DEFAULT_SETTINGS: Settings = {
 	showScale: true,
 	showVelocities: true,
 	textColor: '#FFFFFF',
-	timeScale: 40.0,
 	velocityLineColor: '#FF0000',
 	velocityLineScale: 1000.0,
 	velocityLineWidth: 1.0,

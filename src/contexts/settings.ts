@@ -14,7 +14,6 @@ export interface Settings {
     showScale: boolean;
     showVelocities: boolean;
     textColor: string;
-    timeScale: number;
     velocityLineColor: string;
     velocityLineScale: number;
     velocityLineWidth: number;

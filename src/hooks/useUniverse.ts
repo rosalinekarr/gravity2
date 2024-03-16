@@ -6,7 +6,12 @@ export default function useUniverse() {
 	const universeContext = useContext(UniverseContext);
 	if (!universeContext) throw new Error('Missing Universe Provider');
 
-	const [universe, setUniverse] = universeContext;
+	const {
+		selectedParticles,
+		setSelectedParticles,
+		setUniverse,
+		universe,
+	} = universeContext;
 
 	function createUniverse(opts: UniverseGenerateOptions) {
 		setUniverse(Universe.generate(opts));
@@ -48,5 +53,7 @@ export default function useUniverse() {
 		saveUniverse,
 		loadUniverse,
 		universe,
+		selectedParticles,
+		setSelectedParticles,
 	};
 }
