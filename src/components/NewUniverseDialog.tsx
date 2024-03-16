@@ -4,7 +4,6 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogProps,
 	DialogTitle,
 	Grid,
 	Input,
@@ -15,18 +14,23 @@ import {
 	Grain,
 	Scale,
 } from '@mui/icons-material';
+import { UniverseGenerateOptions } from '../models';
 
-type NewUniverseDialogProps = {onCreate: (opts: {massRange: [number, number], particleCount: number}) => void} & DialogProps;
+interface NewUniverseDialogProps {
+	onCreate: (opts: UniverseGenerateOptions) => void;
+	onClose: () => void;
+	open: boolean;
+}
 
 const DEFAULT_PARTICLE_COUNT = 100;
 const DEFAULT_MASS_RANGE: [number, number] = [10000000.0, 10000000000.0];
 
-export default function NewUniverseDialog({onCreate, ...props}: NewUniverseDialogProps) {
+export default function NewUniverseDialog({onClose, onCreate, open}: NewUniverseDialogProps) {
 	const [massRange, setMassRange] = useState<[number, number]>(DEFAULT_MASS_RANGE);
 	const [particleCount, setParticleCount] = useState(DEFAULT_PARTICLE_COUNT);
 
 	return (
-		<Dialog {...props}>
+		<Dialog open={open} onClose={onClose}>
 			<DialogTitle>New Universe</DialogTitle>
 			<DialogContent sx={{width: '50vw'}}>
 				<Typography variant="body1" id="particle-count" gutterBottom>Particle Count</Typography>
@@ -54,9 +58,10 @@ export default function NewUniverseDialog({onCreate, ...props}: NewUniverseDialo
 				</Grid>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={() => props.onClose}>Cancel</Button>
+				<Button onClick={() => onClose()}>Cancel</Button>
 				<Button onClick={() => onCreate({
-					massRange,
+					maxMass: massRange[1],
+					minMass: massRange[0],
 					particleCount,
 				})}>Create</Button>
 			</DialogActions>

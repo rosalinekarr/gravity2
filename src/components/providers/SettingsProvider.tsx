@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: Settings = {
 	velocityLineWidth: 1.0,
 };
 
-function SettingsProvider({children}: SettingsProviderProps) {
+export default function SettingsProvider({children}: SettingsProviderProps) {
 	const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
 	return (
@@ -34,5 +34,3 @@ function SettingsProvider({children}: SettingsProviderProps) {
 		</SettingsContext.Provider>
 	);
 }
-
-export default SettingsProvider;

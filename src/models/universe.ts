@@ -15,7 +15,7 @@ interface UniverseConstructorArgs {
     particles: Particle[];
 }
 
-interface UniverseGenerateOptions {
+export interface UniverseGenerateOptions {
     maxMass?: number;
     minMass?: number;
     particleCount?: number;

@@ -1,7 +1,11 @@
 import Force from './force';
 import Particle from './particle';
-import Universe from './universe';
+import Universe, {UniverseGenerateOptions} from './universe';
 import Vector from './vector';
+
+export type {
+	UniverseGenerateOptions,
+};
 
 export {
 	Force,

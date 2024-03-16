@@ -1,7 +1,7 @@
 import Canvas from './Canvas';
-import SettingsDialog from './SettingsDialog';
+import MainMenu from './MainMenu';
 
 export {
 	Canvas,
-	SettingsDialog,
+	MainMenu
 }
