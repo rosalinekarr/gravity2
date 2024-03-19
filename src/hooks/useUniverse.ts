@@ -11,6 +11,7 @@ export default function useUniverse() {
 		setSelectedParticles,
 		setUniverse,
 		universe,
+		universeTime,
 	} = universeContext;
 
 	function createUniverse(opts: UniverseGenerateOptions) {
@@ -52,8 +53,9 @@ export default function useUniverse() {
 		createUniverse,
 		saveUniverse,
 		loadUniverse,
-		universe,
 		selectedParticles,
 		setSelectedParticles,
+		universe,
+		universeTime,
 	};
 }

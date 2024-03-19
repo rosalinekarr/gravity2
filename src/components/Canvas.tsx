@@ -9,8 +9,7 @@ function Canvas() {
 	const settings = useSettings();
 	const [_timeScale, setTimeScale] = useTimeScale();
 	const [width, height] = useWindowSize();
-	const [offsetX, setOffsetX] = useState<number>(0.0);
-	const [offsetY, setOffsetY] = useState<number>(0.0);
+	const [offset, setOffset] = useState<Vector>(new Vector(0.0, 0.0));
 	const [scale, setScale] = useState<number>(0.1);
 	const [isScaling, setIsScaling] = useState<boolean>(false);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,18 +17,22 @@ function Canvas() {
 	function handleClick(e: MouseEvent<HTMLCanvasElement>) {
 		setSelectedParticles(
 			universe.selectParticles(
-				(e.clientX - ((offsetX * scale) + width/2)) / scale,
-				(e.clientY - ((offsetY * scale) + height/2)) / scale,
+				(e.clientX - ((offset.x * scale) + width/2)) / scale,
+				(e.clientY - ((offset.y * scale) + height/2)) / scale,
 			)
 		);
 	}
 
 	function handleWheel(e: WheelEvent<HTMLCanvasElement>) {
-		setOffsetX((prevX: number) => prevX - (e.deltaX / scale));
 		if (isScaling) {
 			setScale((prevScale: number) => prevScale * (10 ** (e.deltaY * settings.scaleRate)));
 		} else {
-			setOffsetY((prevY: number) => prevY - (e.deltaY / scale));
+			setOffset((prevVector: Vector) =>
+				new Vector(
+					prevVector.x - (e.deltaX / scale),
+					prevVector.y - (e.deltaY / scale),
+				)
+			);
 		}
 	}
 
@@ -43,19 +46,22 @@ function Canvas() {
 	}
 
 	useRenderCanvas((ctx, _ts) => {
-		const offset = new Vector(offsetX * scale + width/2, offsetY * scale + height/2);
+		const screenOffset = new Vector(
+			offset.x * scale + width/2,
+			offset.y * scale + height/2,
+		);
 		renderBackground(ctx);
 
 		ctx.save();
-		ctx.translate(offset.x, offset.y);
+		ctx.translate(screenOffset.x, screenOffset.y);
 		ctx.scale(scale, scale);
 
 		renderParticles(ctx, universe.particles, settings);
 
 		ctx.restore();
 
-		renderSelectedParticles(ctx, selectedParticles, offset, scale, settings);
-		if (settings.showForces) renderForces(ctx, universe.forces, universe.particles, offset, scale);
+		renderSelectedParticles(ctx, selectedParticles, screenOffset, scale, settings);
+		if (settings.showForces) renderForces(ctx, universe.forces, universe.particles, screenOffset, scale);
 
 		renderScale(ctx, scale, settings);
 	}, canvasRef);

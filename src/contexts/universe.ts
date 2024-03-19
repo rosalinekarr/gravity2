@@ -8,6 +8,7 @@ interface UniverseContext {
     setUniverse: Dispatch<SetStateAction<Universe>>;
     timeScale: number;
     universe: Universe;
+    universeTime: number;
 }
 
 const UniverseContext = createContext<UniverseContext | null>(null);

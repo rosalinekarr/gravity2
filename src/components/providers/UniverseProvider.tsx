@@ -10,6 +10,7 @@ export default function UniverseProvider({children}: UniverseProviderProps) {
 	const [selectedParticles, setSelectedParticles] = useState<Particle[]>([]);
 	const [timeScale, setTimeScale] = useState<number>(0.0);
 	const [universe, setUniverse] = useState<Universe>(Universe.generate());
+	const [universeTime, setUniverseTime] = useState<number>(0.0);
 
 	useEffect(() => {
 		if (timeScale === 0.0) return;
@@ -19,9 +20,10 @@ export default function UniverseProvider({children}: UniverseProviderProps) {
 
 		function tick() {
 			const now = Date.now();
-			const timeDelta = (now - lastTick);
+			const timeDelta = (now - lastTick) * timeScale;
 
-			universe.update(timeDelta * timeScale);
+			universe.update(timeDelta);
+			setUniverseTime((prevTime) => prevTime + timeDelta);
 
 			lastTick = now;
 			timeoutId = setTimeout(tick, 0);
@@ -39,6 +41,7 @@ export default function UniverseProvider({children}: UniverseProviderProps) {
 			setUniverse,
 			timeScale,
 			universe,
+			universeTime,
 		}}>
 			{children}
 		</UniverseContext.Provider>
